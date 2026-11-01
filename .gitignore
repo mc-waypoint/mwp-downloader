@@ -4,3 +4,4 @@ data/
 dist/
 *.build/
 *nuitka*
+__pycache__/*
