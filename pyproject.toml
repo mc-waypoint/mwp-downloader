@@ -12,7 +12,7 @@ dependencies = [
 
 [dependency-groups]
 build = [
-    "nuitka>=2.7",
+    "nuitka>=4.1",
     "zstandard",
     "ordered-set",
 ]

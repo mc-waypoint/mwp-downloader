@@ -14,6 +14,8 @@ try {
         --windows-console-mode=disable `
         --include-package=nicegui `
         --include-package-data=nicegui `
+        --include-package-data=webview `
+        --include-package-data=certifi `
         --onefile-tempdir-spec='{CACHE_DIR}/{PRODUCT}/{VERSION}' `
         --output-dir=dist `
         --output-filename=mwp-downloader.exe `
