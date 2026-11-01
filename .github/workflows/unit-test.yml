@@ -1,0 +1,34 @@
+name: 构建windows exe可执行程序
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: 安装 uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: 安装 Python 运行环境
+        run: uv python install 3.14
+
+      - name: 安装依赖项
+        run: uv sync --group build
+
+      - name: 运行测试
+        run: uv run --group build python -m unittest discover -s tests -v

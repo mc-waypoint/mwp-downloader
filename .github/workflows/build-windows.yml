@@ -30,9 +30,6 @@ jobs:
       - name: 安装依赖项
         run: uv sync --group build
 
-      - name: 运行测试
-        run: uv run --group build python -m unittest discover -s tests -v
-
       - name: 构建单文件程序
         shell: powershell
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
