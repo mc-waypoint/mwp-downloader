@@ -16,10 +16,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 安装 uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
@@ -35,7 +35,7 @@ jobs:
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 
       - name: 上传产物
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mwp-downloader-windows-x64
           path: dist/mwp-downloader.exe
