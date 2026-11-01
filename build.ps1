@@ -21,7 +21,7 @@ try {
         --output-filename=mwp-downloader.exe `
         --remove-output `
         --product-name=mc_waypoint `
-        --product-version=1.0.0 `
+        --product-version=1.1.0 `
         main.py
     if ($LASTEXITCODE -ne 0) {
         throw "Nuitka build failed with exit code $LASTEXITCODE"
