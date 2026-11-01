@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 
 from downloader import DownloadJob, DownloadManager, create_manual_job, parse_manifest
+import main as downloader_app
 
 
 class ManifestTests(unittest.TestCase):
@@ -84,6 +85,45 @@ class ManifestTests(unittest.TestCase):
 
 
 class DownloadTests(unittest.IsolatedAsyncioTestCase):
+    def test_manifest_is_deleted_only_after_all_jobs_finish(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            manifest = Path(temporary_directory) / "manifest.json"
+            manifest.write_text("{}", encoding="utf-8")
+            jobs = [
+                DownloadJob(
+                    "https://example.com/one",
+                    Path(temporary_directory) / "one",
+                    None,
+                    manifest,
+                    status="completed",
+                ),
+                DownloadJob(
+                    "https://example.com/two",
+                    Path(temporary_directory) / "two",
+                    None,
+                    manifest,
+                    status="downloading",
+                ),
+            ]
+            previous_jobs = downloader_app.jobs
+            previous_seen = downloader_app.seen_manifests.copy()
+            previous_errors = downloader_app.manifest_errors.copy()
+            try:
+                downloader_app.jobs = jobs
+                downloader_app.seen_manifests = {manifest}
+                downloader_app.manifest_errors = {}
+                downloader_app.cleanup_finished_manifests()
+                self.assertTrue(manifest.exists())
+
+                jobs[1].status = "skipped"
+                downloader_app.cleanup_finished_manifests()
+                self.assertFalse(manifest.exists())
+                self.assertNotIn(manifest, downloader_app.seen_manifests)
+            finally:
+                downloader_app.jobs = previous_jobs
+                downloader_app.seen_manifests = previous_seen
+                downloader_app.manifest_errors = previous_errors
+
     async def test_manual_job_downloads_without_sha1(self) -> None:
         payload = b"manual download"
 

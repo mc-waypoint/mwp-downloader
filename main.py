@@ -48,6 +48,21 @@ def _register_jobs(new_jobs: list[DownloadJob], client: httpx.AsyncClient) -> No
         asyncio.create_task(manager.download(job, client))
 
 
+def cleanup_finished_manifests() -> None:
+    terminal_statuses = {"completed", "skipped"}
+    for manifest in tuple(seen_manifests):
+        manifest_jobs = [job for job in jobs if job.manifest == manifest]
+        if not manifest_jobs or not all(job.status in terminal_statuses for job in manifest_jobs):
+            continue
+        try:
+            manifest.unlink(missing_ok=True)
+        except OSError as error:
+            manifest_errors[manifest] = f"下载已结束，但无法删除清单 {manifest.name}: {error}"
+        else:
+            seen_manifests.discard(manifest)
+            manifest_errors.pop(manifest, None)
+
+
 @ui.refreshable
 def render_stats() -> None:
     counts = {
@@ -170,6 +185,7 @@ async def monitor_manifests(client: httpx.AsyncClient) -> None:
                 manifest_errors[resolved_manifest] = f"{manifest.name}: {error}"
             except OSError as error:
                 manifest_errors[resolved_manifest] = f"无法处理 {manifest.name}: {error}"
+        cleanup_finished_manifests()
         render_stats.refresh()
         render_jobs.refresh()
         await asyncio.sleep(1)
