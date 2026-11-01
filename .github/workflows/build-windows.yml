@@ -1,5 +1,4 @@
-name: Build Windows executable
-
+name: 构建windows exe可执行程序
 on:
   push:
     branches:
@@ -19,26 +18,26 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install uv
+      - name: 安装 uv
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
           cache-dependency-glob: uv.lock
 
-      - name: Install Python
+      - name: 安装 Python 运行环境
         run: uv python install 3.14
 
-      - name: Install dependencies
+      - name: 安装依赖项
         run: uv sync --group build
 
-      - name: Run tests
+      - name: 运行测试
         run: uv run --group build python -m unittest discover -s tests -v
 
-      - name: Build standalone executable
+      - name: 构建单文件程序
         shell: powershell
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 
-      - name: Upload executable
+      - name: 上传产物
         uses: actions/upload-artifact@v4
         with:
           name: mwp-downloader-windows-x64
