@@ -1,4 +1,4 @@
-name: 构建windows exe可执行程序
+name: 运行单元测试
 on:
   push:
     branches:
