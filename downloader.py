@@ -10,6 +10,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app_paths import get_app_directory
+
 
 MAX_CONNECTIONS_PER_SERVER = 8
 MAX_SHA1_RETRIES = 3
@@ -46,7 +48,7 @@ def _validate_url(url: str) -> None:
 def _resolve_destination(path: str) -> Path:
     destination = Path(path)
     if not destination.is_absolute():
-        destination = Path(__file__).resolve().parent / destination
+        destination = get_app_directory() / destination
     return destination.resolve()
 
 

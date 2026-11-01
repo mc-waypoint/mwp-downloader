@@ -4,10 +4,11 @@ from pathlib import Path
 import httpx
 from nicegui import app, ui
 
+from app_paths import get_app_directory
 from downloader import DownloadJob, DownloadManager, create_manual_job, parse_manifest
 
 
-DATA_DIR = Path(__file__).parent / "data"
+DATA_DIR = get_app_directory() / "data"
 jobs: list[DownloadJob] = []
 manifest_errors: dict[Path, str] = {}
 seen_manifests: set[Path] = set()

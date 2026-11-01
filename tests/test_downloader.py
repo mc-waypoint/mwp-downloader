@@ -7,8 +7,14 @@ from pathlib import Path
 
 import httpx
 
+from app_paths import get_app_directory
 from downloader import DownloadJob, DownloadManager, create_manual_job, parse_manifest
 import main as downloader_app
+
+
+class AppPathTests(unittest.TestCase):
+    def test_source_application_directory_is_project_directory(self) -> None:
+        self.assertEqual(get_app_directory(), Path(__file__).resolve().parents[1])
 
 
 class ManifestTests(unittest.TestCase):

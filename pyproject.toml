@@ -9,3 +9,8 @@ dependencies = [
     "nicegui>=2.0",
     "pywebview",
 ]
+
+[dependency-groups]
+build = [
+    "nuitka>=2.7",
+]
