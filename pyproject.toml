@@ -13,4 +13,6 @@ dependencies = [
 [dependency-groups]
 build = [
     "nuitka>=2.7",
+    "zstandard",
+    "ordered-set",
 ]

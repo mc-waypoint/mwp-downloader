@@ -1,8 +1,12 @@
+from multiprocessing import freeze_support
+
 import asyncio
 from pathlib import Path
 
 import httpx
 from nicegui import app, ui
+
+app.native.window_args['transparent'] = True 
 
 from app_paths import get_app_directory
 from downloader import DownloadJob, DownloadManager, create_manual_job, parse_manifest
@@ -298,6 +302,7 @@ def index() -> None:
 def main() -> None:
     app.on_startup(start_services)
     app.on_shutdown(stop_services)
+    freeze_support()
     ui.run(title="MWP Downloader", reload=False, native=True)
 
 
