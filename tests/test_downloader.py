@@ -140,7 +140,7 @@ class DownloadTests(unittest.IsolatedAsyncioTestCase):
             destination = Path(temporary_directory) / "new" / "folder" / "manual.bin"
             job = create_manual_job(" https://example.com/file ", str(destination))
             self.assertIsNone(job.sha1)
-            self.assertEqual(job.destination, destination)
+            self.assertEqual(job.destination, destination.resolve())
 
             async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
                 await DownloadManager().download(job, client)
