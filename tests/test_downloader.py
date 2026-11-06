@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import httpx
 
@@ -15,6 +16,26 @@ import main as downloader_app
 class AppPathTests(unittest.TestCase):
     def test_source_application_directory_is_project_directory(self) -> None:
         self.assertEqual(get_app_directory(), Path(__file__).resolve().parents[1])
+
+
+class AutoCloseTests(unittest.TestCase):
+    def test_auto_close_requires_flag_and_empty_data_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            data_dir = Path(temporary_directory)
+            with patch.object(downloader_app, "DATA_DIR", data_dir):
+                with patch.object(
+                    downloader_app.sys, "argv", ["main.py"]
+                ):
+                    self.assertFalse(downloader_app._auto_close_if_data_empty())
+
+                with patch.object(
+                    downloader_app.sys, "argv", ["main.py", "--auto-close"]
+                ):
+                    with patch.object(downloader_app.app.native, "main_window") as window:
+                        self.assertTrue(downloader_app._auto_close_if_data_empty())
+                        window.destroy.assert_called_once_with()
+                        (data_dir / "keep.txt").write_text("keep", encoding="utf-8")
+                        self.assertFalse(downloader_app._auto_close_if_data_empty())
 
 
 class ManifestTests(unittest.TestCase):

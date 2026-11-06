@@ -1,6 +1,7 @@
 from multiprocessing import freeze_support
 
 import asyncio
+import sys
 from pathlib import Path
 
 import httpx
@@ -66,6 +67,16 @@ def cleanup_finished_manifests() -> None:
         else:
             seen_manifests.discard(manifest)
             manifest_errors.pop(manifest, None)
+
+
+def _auto_close_if_data_empty() -> bool:
+    if "--auto-close" not in sys.argv[1:] or any(DATA_DIR.iterdir()):
+        return False
+    main_window = app.native.main_window
+    if main_window is None:
+        return False
+    main_window.destroy()
+    return True
 
 
 @ui.refreshable
@@ -193,6 +204,8 @@ async def monitor_manifests(client: httpx.AsyncClient) -> None:
         cleanup_finished_manifests()
         render_stats.refresh()
         render_jobs.refresh()
+        if _auto_close_if_data_empty():
+            return
         await asyncio.sleep(1)
 
 
